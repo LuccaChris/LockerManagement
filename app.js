@@ -14,7 +14,7 @@
                         id: lockerId,
                         status: 'available',
                         employee: null,
-                        assignedDate: new Date().toISOString()
+                        assignedDate: null
                     };
                     lockerNumber++;
                 }
@@ -182,7 +182,7 @@
                     ...lockers[currentLocker],
                     status: 'available',
                     employee: null,
-                    assignedDate: document.getElementById('assignedDate').value
+                    assignedDate: null
                 };
 
                 renderLockers();
