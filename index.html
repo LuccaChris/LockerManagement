@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gerenciamento de Armários</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">Sistema de Gerenciamento de Armários</h1>
+            <div class="flex flex-wrap gap-4 items-center">
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded available"></div>
+                    <span class="text-sm font-medium">Livre (<span id="availableCount">0</span>)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded occupied"></div>
+                    <span class="text-sm font-medium">Ocupado (<span id="occupiedCount">0</span>)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded maintenance"></div>
+                    <span class="text-sm font-medium">Manutenção (<span id="maintenanceCount">0</span>)</span>
+                </div>
+                <button onclick="showEmployeeList()" class="ml-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium">
+                    📋 Lista de Colaboradores
+                </button>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex flex-wrap gap-4">
+                <input type="text" id="searchLocker" placeholder="Buscar armário (ex: A001)" 
+                       class="flex-1 min-w-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <input type="text" id="searchEmployee" placeholder="Buscar colaborador" 
+                       class="flex-1 min-w-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <select id="statusFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <option value="">Todos os status</option>
+                    <option value="available">Livres</option>
+                    <option value="occupied">Ocupados</option>
+                    <option value="maintenance">Manutenção</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Lockers Grid -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Mapa dos Armários</h2>
+            <div id="lockersGrid" class="grid grid-cols-10 sm:grid-cols-15 md:grid-cols-20 gap-2">
+                <!-- Armários serão gerados aqui -->
+            </div>
+        </div>
+
+        <!-- Employee List Modal -->
+        <div id="employeeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
+                    <div class="p-6 border-b">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-2xl font-bold text-gray-800">Lista de Colaboradores</h2>
+                            <button onclick="closeEmployeeList()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                        </div>
+                    </div>
+                    <div class="p-6 overflow-y-auto max-h-[70vh]">
+                        <div class="overflow-x-auto">
+                            <table class="w-full border-collapse border border-gray-300">
+                                <thead>
+                                    <tr class="bg-gray-50">
+                                        <th class="border border-gray-300 px-4 py-2 text-left">Armário</th>
+                                        <th class="border border-gray-300 px-4 py-2 text-left">Nome</th>
+                                        <th class="border border-gray-300 px-4 py-2 text-left">Matrícula</th>
+                                        <th class="border border-gray-300 px-4 py-2 text-left">Setor</th>
+                                        <th class="border border-gray-300 px-4 py-2 text-left">Data Início</th>
+                                        <th class="border border-gray-300 px-4 py-2 text-left">Status</th>
+                                        <th class="border border-gray-300 px-4 py-2 text-left">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employeeTableBody">
+                                    <!-- Dados serão inseridos aqui -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Locker Details Modal -->
+        <div id="lockerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+                    <div class="p-6 border-b">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-xl font-bold text-gray-800">Detalhes do Armário</h2>
+                            <button onclick="closeLockerModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div id="lockerDetails">
+                            <!-- Detalhes serão inseridos aqui -->
+                        </div>
+                        <div class="mt-6 flex gap-3">
+                            <button id="assignBtn" onclick="showAssignForm()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium">
+                                Atribuir
+                            </button>
+                            <button id="releaseBtn" onclick="releaseLocker()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium">
+                                Liberar
+                            </button>
+                            <button id="maintenanceBtn" onclick="toggleMaintenance()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg font-medium">
+                                Manutenção
+                            </button>
+                        </div>
+                        
+                        <!-- Assignment Form -->
+                        <div id="assignForm" class="mt-6 hidden">
+                            <h3 class="text-lg font-semibold mb-4">Atribuir Armário</h3>
+                            <div class="space-y-4">
+                                <input type="text" id="employeeName" placeholder="Nome do colaborador" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <input type="text" id="employeeId" placeholder="Matrícula" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <input type="text" id="employeeDept" placeholder="Setor" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <div class="flex gap-3">
+                                    <button onclick="assignLocker()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium">
+                                        Confirmar
+                                    </button>
+                                    <button onclick="hideAssignForm()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium">
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>s
+</html>

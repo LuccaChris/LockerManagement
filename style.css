@@ -1,0 +1,15 @@
+ .locker {
+            transition: all 0.3s ease;
+        }
+        .locker:hover {
+            transform: scale(1.05);
+        }
+        .occupied {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        .available {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        .maintenance {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
