@@ -4,11 +4,11 @@
 
         // Inicializar armários
         function initializeLockers() {
-            const sections = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+            const sections = ['Armario - '];
             let lockerNumber = 1;
             
             sections.forEach(section => {
-                for (let i = 1; i <= 50; i++) {
+                for (let i = 1; i <= 400; i++) {
                     const lockerId = `${section}${String(i).padStart(3, '0')}`;
                     lockers[lockerId] = {
                         id: lockerId,
@@ -31,7 +31,7 @@
                 if (shouldShowLocker(locker)) {
                     const lockerElement = document.createElement('div');
                     lockerElement.className = `locker w-8 h-8 rounded cursor-pointer flex items-center justify-center text-xs font-bold text-white shadow-md ${locker.status}`;
-                    lockerElement.textContent = locker.id.slice(-2);
+                    lockerElement.textContent = locker.id.slice(-3);
                     lockerElement.title = `${locker.id} - ${getStatusText(locker.status)}`;
                     lockerElement.onclick = () => openLockerModal(locker.id);
                     grid.appendChild(lockerElement);
